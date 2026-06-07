@@ -3,7 +3,7 @@
 基于 LangGraph 官方教程实现
 """
 
-from typing import AsyncGenerator, Dict, Any
+from typing import AsyncGenerator, Dict, Any, Optional
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 from loguru import logger
@@ -261,7 +261,7 @@ class AIOpsService:
             else:
                 yield event
 
-    def _format_planner_event(self, state: Dict | None) -> Dict:
+    def _format_planner_event(self, state: Optional[Dict]) -> Dict:
         """格式化 Planner 节点事件"""
         if not state:
             return {
@@ -279,7 +279,7 @@ class AIOpsService:
             "plan": plan
         }
 
-    def _format_executor_event(self, state: Dict | None) -> Dict:
+    def _format_executor_event(self, state: Optional[Dict]) -> Dict:
         """格式化 Executor 节点事件"""
         if not state:
             return {
@@ -307,7 +307,7 @@ class AIOpsService:
                 "message": "开始执行步骤"
             }
 
-    def _format_replanner_event(self, state: Dict | None) -> Dict:
+    def _format_replanner_event(self, state: Optional[Dict]) -> Dict:
         """格式化 Replanner 节点事件"""
         if not state:
             return {

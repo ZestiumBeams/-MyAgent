@@ -15,7 +15,7 @@ class DocumentSplitterService:
 
     def __init__(self):
         """初始化文档分割服务"""
-        self.chunk_size = config.chunk_max_size
+        self.chunk_size = config.chunk_max_size  # 从配置文件中获取
         self.chunk_overlap = config.chunk_overlap
 
         # Markdown 标题分割器 (只按一级和二级标题分割，减少分片数)
@@ -31,7 +31,7 @@ class DocumentSplitterService:
         # 递归字符分割器 (用于二次分割，使用更大的chunk_size)
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=self.chunk_size * 2,  # 加倍chunk_size，减少分片数
-            chunk_overlap=self.chunk_overlap,
+            chunk_overlap=self.chunk_overlap, # 重叠部分（100）防止上下文断裂
             length_function=len,
             is_separator_regex=False,
         )
@@ -127,8 +127,10 @@ class DocumentSplitterService:
             List[Document]: 文档分片列表
         """
         if file_path.endswith(".md"):
+            # md 文档按照文档分割
             return self.split_markdown(content, file_path)
         else:
+            # 文本信息按照文本分割
             return self.split_text(content, file_path)
 
     def _merge_small_chunks(

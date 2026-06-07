@@ -34,6 +34,7 @@ class SearchResult:
         }
 
 
+# 向量检索召回
 class VectorSearchService:
     """向量检索服务 - 负责从 Milvus 中搜索相似向量"""
 
@@ -41,6 +42,7 @@ class VectorSearchService:
         """初始化向量检索服务"""
         logger.info("向量检索服务初始化完成")
 
+    # 检索并返回 TopK
     def search_similar_documents(self, query: str, top_k: int = 3) -> List[SearchResult]:
         """
         搜索相似文档

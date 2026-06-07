@@ -10,9 +10,12 @@ from app.services.document_splitter_service import document_splitter_service
 from app.services.vector_store_manager import vector_store_manager
 
 
+# IndexingResult 主要用来记录批量处理文件时的成功率、耗时等统计信息
 class IndexingResult:
     """索引结果类"""
 
+    # Dict[str, str] 是字典类型，等价于 Java 的 Map<String, String>
+    # 用来记录具体哪个文件报错了，格式为：{"D:/file.txt": "错误原因"}
     def __init__(self):
         self.success = False
         self.directory_path = ""
@@ -42,6 +45,7 @@ class IndexingResult:
             return int((self.end_time - self.start_time).total_seconds() * 1000)
         return 0
 
+    # 返回结果
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return {
@@ -56,6 +60,7 @@ class IndexingResult:
         }
 
 
+# 批量目录处理
 class VectorIndexService:
     """向量索引服务 - 负责读取文件、生成向量、存储到 Milvus"""
 

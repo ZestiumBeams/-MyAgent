@@ -11,7 +11,7 @@ from app.core.milvus_client import milvus_manager
 from app.services.vector_embedding_service import vector_embedding_service
 
 
-# 统一使用 biz collection
+# 统一使用 biz collection，相当于数据库的表名字
 COLLECTION_NAME = "biz"
 
 
@@ -22,15 +22,16 @@ class VectorStoreManager:
         """初始化向量存储管理器"""
         self.vector_store = None
         self.collection_name = COLLECTION_NAME
-        self._initialize_vector_store()
+        self._initialize_vector_store()  # 初始化数据库
 
     def _initialize_vector_store(self):
-        """初始化 Milvus VectorStore"""
+        """初始化 Milvus 向量数据库"""
         try:
             # 必须在 PyMilvus / langchain_milvus 访问 Collection 之前建立连接，
             # 否则会出现 ConnectionNotExistException: should create connection first.
+
             # （模块导入时就会执行此处，早于 FastAPI lifespan 中的 milvus_manager.connect）
-            _ = milvus_manager.connect()
+            milvus_manager.connect()
 
             connection_args = {
                 "host": config.milvus_host,
@@ -40,7 +41,10 @@ class VectorStoreManager:
             # 创建 LangChain Milvus VectorStore
             # 使用 biz collection，字段映射：text_field -> content, vector_field -> vector
             self.vector_store = Milvus(
+                # 会自动调用vector_embedding_service.embed_documents()生成向量
+                # LangChain要求传入Embedding模型对象。
                 embedding_function=vector_embedding_service,
+
                 collection_name=self.collection_name,
                 connection_args=connection_args,
                 auto_id=False,  # 使用自定义 id
@@ -48,7 +52,7 @@ class VectorStoreManager:
                 text_field="content",  # 文本内容存储到 content 字段
                 vector_field="vector",  # 向量存储到 vector 字段
                 primary_field="id",  # 主键字段
-                metadata_field="metadata",  # 元数据字段
+                metadata_field="metadata",  # 元数据字段，来源
             )
 
             logger.info(
@@ -59,6 +63,22 @@ class VectorStoreManager:
         except Exception as e:
             logger.error(f"VectorStore 初始化失败: {e}")
             raise
+
+    '''
+                    向量数据库中的一条数据：
+                    {
+                      "id":"123",
+
+                      "content":"Redis基于内存",
+
+                      "vector":[0.22,0.77,...],
+
+                      "metadata":{
+                          "_source":"redis.md"
+                      }
+                    }
+                    '''
+
 
     def add_documents(self, documents: List[Document]) -> List[str]:
         """
@@ -135,7 +155,7 @@ class VectorStoreManager:
 
         Args:
             query: 查询文本
-            k: 返回结果数量
+            k: 返回结果数量，默认为 top3
 
         Returns:
             List[Document]: 相关文档列表

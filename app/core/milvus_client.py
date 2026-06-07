@@ -1,4 +1,5 @@
 """Milvus 客户端工厂模块"""
+from typing import Optional
 
 from loguru import logger
 from pymilvus import (
@@ -53,8 +54,8 @@ class MilvusClientManager:
 
     def __init__(self) -> None:
         """初始化 Milvus 客户端管理器"""
-        self._client: MilvusClient | None = None
-        self._collection: Collection | None = None
+        self._client: Optional[MilvusClient] = None
+        self._collection: Optional[Collection] = None
 
     def connect(self) -> MilvusClient:
         """
@@ -306,8 +307,8 @@ class MilvusClientManager:
 
     def __exit__(
         self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
+        exc_type: Optional[type[BaseException]],
+        exc_val: Optional[BaseException],
         exc_tb: object
     ) -> None:
         """上下文管理器退出"""
