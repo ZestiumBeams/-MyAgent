@@ -1,6 +1,5 @@
-# SuperBizAgent
 
-> 企业级智能对话和运维助手，支持 RAG 知识库问答和 AIOps 智能诊断
+> 智能对话和运维助手，支持 RAG 知识库问答和 AIOps 智能诊断
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com/)
@@ -410,7 +409,3 @@ netstat -ano | findstr :8004  # Monitor MCP
 - [阿里云 DashScope](https://dashscope.aliyun.com/)
 - [MCP 协议](https://modelcontextprotocol.io/)
 
-## 📄 许可证
-author： chief
-
-MIT License
